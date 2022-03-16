@@ -39,6 +39,26 @@
                    
                 </tbody>
             </table>
+            <button id="page1" data-page="4"> Go To Page 4 </button>
+            <div class="button-container">
+            </div>
+
+            <table class="template d-none">
+                <tr>
+                    <td class="col-client-id"></td>
+                    <td class="col-client-name"></td>
+                    <td class="col-client-surname"></td>
+                    <td class="col-client-description"></td>
+                    <td>
+                        <button class="btn btn-danger delete-client" type="submit" data-clientid="">DELETE</button>
+                        <button type="button" class="btn btn-primary show-client" data-bs-toggle="modal"
+                            data-bs-target="#showClientModal" data-clientid="">Show</button>
+                        <button type="button" class="btn btn-secondary edit-client" data-bs-toggle="modal"
+                            data-bs-target="#editClientModal" data-clientid="">Edit</button>
+                    </td>
+                </tr>
+            </table>
+
         </div>    
         <script>
 
@@ -46,53 +66,68 @@
                 console.log('jquery veikia');
             })
 
+            function createRowFromHtml(clientId, clientName, clientSurname, clientDescription) {
+                $(".template tr").removeAttr("class");
+                $(".template tr").addClass("client" + clientId);
+                $(".template .delete-client").attr('data-clientid', clientId);
+                $(".template .show-client").attr('data-clientid', clientId);
+                $(".template .edit-client").attr('data-clientid', clientId);
+                $(".template .col-client-id").html(clientId);
+                $(".template .col-client-name").html(clientName);
+                $(".template .col-client-surname").html(clientSurname);
+                $(".template .col-client-description").html(clientDescription);
+                // $(".template .col-client-company").html(clientCompanyId);
+
+                return $(".template tbody").html();
+            }
+            // .button-container button
+            $(document).on('click', '.button-container button',function() {
+
+                let page= $(this).attr('data-page');
+                console.log(page);
+                $.ajax({
+                    type: 'GET',
+                    url: page,
+                    success: function(data) {
+                        $('#clients tbody').html('');
+                        $('.button-container').html('');
+
+                       $.each(data.data, function(key, client) {
+                    
+                           let html;
+                           html = createRowFromHtml(client.id, client.name, client.surname, client.description);
+                           $('#clients tbody').append(html);
+                       });
+
+                       $.each(data.links, function(key, link) {
+
+                            let button;
+                            button = "<button class='btn btn-primary' type='button' data-page='"+link.url +"'>" + link.label+" </button>";
+                            $('.button-container').append(button);
+                       });
+                        console.log(data)
+                    }
+                });
+            });
+
             $.ajax({
                     type: 'GET',
                     url: 'http://127.0.0.1:8000/api/clients',
                     success: function(data) {
-                        console.log(data);
-
-                        // if ($.isEmptyObject(data.errorMessage)) {
-                        //     //sekmes atvejis
-                        //     $("#clients-table tbody").html('');
-                        //     $.each(data.clients, function(key, client) {
-                        //         let html;
-                        //         html = createRowFromHtml(client.id, client.name, client
-                        //             .surname, client.description, client
-                        //             .client_company.title);
-                        //         // console.log(html)
-                        //         $("#clients-table tbody").append(html);
-                        //     });
-
-                        //     $("#createClientModal").hide();
-                        //     $('body').removeClass('modal-open');
-                        //     $('.modal-backdrop').remove();
-                        //     $('body').css({
-                        //         overflow: 'auto'
-                        //     });
-
-                        //     $("#alert").removeClass("d-none");
-                        //     $("#alert").html(data.successMessage + " " + data.clientName + " " +
-                        //         data.clientSurname);
-
-                        //     $('#client_name').val('');
-                        //     $('#client_surname').val('');
-                        //     $('#client_description').val('');
-                        // } else {
-                        //     console.log(data.errorMessage);
-                        //     console.log(data.errors);
-                        //     $('.create-input').removeClass('is-invalid');
-                        //     $('.invalid-feedback').html('');
-
-                        //     $.each(data.errors, function(key, error) {
-                        //         console.log(key); //key = input id
-                        //         $('#' + key).addClass('is-invalid');
-                        //         $('.input_' + key).html("<strong>" + error +
-                        //             "</strong>");
-                        //     });
-                        // }
+                        $.each(data.data, function(key, client) {
+                    
+                        let html;
+                        html = createRowFromHtml(client.id, client.name, client.surname, client.description);
+                        $('#clients tbody').append(html);
+                        });
+                       console.log(data.links)
+                       $.each(data.links, function(key, link) {
+                            let button;
+                            button = "<button class='btn btn-primary' type='button' data-page='"+link.url +"'>" + link.label+" </button>";
+                            $('.button-container').append(button);
+                       });
                     }
-                });
+            });
 
 
 
