@@ -111,6 +111,49 @@
               </div>
             </div>
           </div>    
+        
+        
+          <div class="modal fade" id="editClientModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Edit Modal</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="ajaxForm">
+                    <input type="hidden" id="edit_client_id" name="client_id" />
+                    <div class="form-group">
+                        <label for="client_name">Client Name</label>
+                        <input id="edit_client_name" class="form-control" type="text" name="client_name" />
+                    </div>
+                    <div class="form-group">
+                        <label for="client_surname">Client Surname</label>
+                        <input id="edit_client_surname" class="form-control" type="text" name="client_surname" />
+                    </div>
+                    <div class="form-group">
+                        <label for="client_description">Client Description</label>
+                        <input id="edit_client_description" class="form-control" type="text" name="client_description" />
+                    </div>
+                    {{-- <div class="form-group">
+                      <label for="client_description">Client Company id</label>
+                      <select id="edit_client_company_id" class="form-select">
+                        @foreach ($companies as $company)
+                          <option class="company{{$company->id}}" value="{{$company->id}}">{{$company->title}}</option>
+                        @endforeach
+                      </select>  
+                    </div> --}}
+                </div> 
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    {{-- <button id="close-client-create-modal" type="button" class="btn btn-secondary">Close with Javascript</button> --}}
+                    <button id="update-client" type="button" class="btn btn-primary update-client">Update</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        
         <script>
 
             $(document).ready(function(){
@@ -253,6 +296,41 @@
                     }
                 });
             })
+
+
+
+
+            // update-client
+            $(document).on('click', '#update-client',function() {
+                let clientid = $('#edit_client_id').val();
+                let client_name = $('#edit_client_name').val();
+                let client_surname = $('#edit_client_surname').val() ;
+                let client_description = $('#edit_client_description').val() ;
+                $.ajax({
+                        type: 'PUT',
+                        url: 'http://127.0.0.1:8000/api/clients/'+clientid,//
+                        data: {client_name:client_name, client_surname:client_surname, client_description:client_description },
+                        success: function(data) {
+                            console.log(data)
+                        }
+                });
+            });
+
+
+            $(document).on('click', '.edit-client',function() {
+                let clientid = $(this).attr('data-clientid');
+                $.ajax({
+                    type: 'GET',
+                    url: 'http://127.0.0.1:8000/api/clients/'+clientid,//
+                    success: function(data) {
+                        $('#edit_client_id').val(data.id);
+                        $('#edit_client_name').val(data.name);
+                        $('#edit_client_surname').val(data.surname);
+                        $('#edit_client_description').val(data.description);
+                    }
+                });
+            });
+            
             
 
 
