@@ -26,6 +26,9 @@
     </head>
     <body class="antialiased">
         <div class="container">
+            <button id="show-create-client-modal" data-bs-toggle="modal" data-bs-target="#createClientModal" >Create Client</button>
+            
+            
             <table id="clients" class="table table-striped">
                 <thead>
                     <tr>
@@ -59,12 +62,62 @@
                 </tr>
             </table>
 
-        </div>    
+        </div>
+        <div class="modal fade" id="createClientModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Create Modal</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="ajaxForm">
+                    <div class="form-group">
+                        <label for="client_name">Client Name</label>
+                        {{-- is-invalid ant inputo --}}
+                        <input id="client_name" class="form-control create-input" type="text" name="client_name" />
+                        
+                        <span class="invalid-feedback input_client_name">
+                        </span>
+                      </div>
+                    <div class="form-group">
+                        <label for="client_surname">Client Surname</label>
+                        <input id="client_surname" class="form-control create-input" type="text" name="client_surname" />
+                        <span class="invalid-feedback input_client_surname">
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label for="client_description">Client Description</label>
+                        <input id="client_description" class="form-control create-input" type="text" name="client_description" />
+                        <span class="invalid-feedback input_client_description">
+                        </span>  
+                    </div>
+                    {{-- <div class="form-group">
+                      <label for="client_company_id">Client Company</label>
+                      <select id="client_company_id" class="form-select create-input">
+                        @foreach ($companies as $company)
+                          <option value="{{$company->id}}">{{$company->title}}</option>
+                        @endforeach
+                      </select>
+                      <span class="invalid-feedback input_client_company_id"> </span> 
+                    </div> --}}
+                </div> 
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    {{-- <button id="close-client-create-modal" type="button" class="btn btn-secondary">Close with Javascript</button> --}}
+                    <button id="create-client" type="button" class="btn btn-primary">Save changes</button>
+                </div>
+              </div>
+            </div>
+          </div>    
         <script>
 
             $(document).ready(function(){
                 console.log('jquery veikia');
             })
+
+            let csrf = '123456789';
 
             function createRowFromHtml(clientId, clientName, clientSurname, clientDescription) {
                 $(".template tr").removeAttr("class");
@@ -88,6 +141,7 @@
                 $.ajax({
                     type: 'GET',
                     url: page,
+                    data: {csrf:csrf},
                     success: function(data) {
                         $('#clients tbody').html('');
                         $('.button-container').html('');
@@ -102,7 +156,13 @@
                        $.each(data.links, function(key, link) {
 
                             let button;
-                            button = "<button class='btn btn-primary' type='button' data-page='"+link.url +"'>" + link.label+" </button>";
+                            if (link.url != null) {
+                                if(link.active == true) {
+                                    button = "<button class='btn btn-primary active type='button' data-page='"+link.url +"'>" + link.label+" </button>";
+                                } else {
+                                    button = "<button class='btn btn-primary' type='button' data-page='"+link.url +"'>" + link.label+" </button>";
+                                }
+                            }
                             $('.button-container').append(button);
                        });
                         console.log(data)
@@ -113,6 +173,7 @@
             $.ajax({
                     type: 'GET',
                     url: 'http://127.0.0.1:8000/api/clients',
+                    data: {csrf:csrf},
                     success: function(data) {
                         $.each(data.data, function(key, client) {
                     
@@ -123,11 +184,76 @@
                        console.log(data.links)
                        $.each(data.links, function(key, link) {
                             let button;
-                            button = "<button class='btn btn-primary' type='button' data-page='"+link.url +"'>" + link.label+" </button>";
+                            if (link.url != null) { 
+                                if(link.active == true) {
+                                    button = "<button class='btn btn-primary active' type='button' data-page='"+link.url +"'>" + link.label+" </button>";
+                                }
+                                else {
+                                    button = "<button class='btn btn-primary' type='button' data-page='"+link.url +"'>" + link.label+" </button>";
+                                }
+                            }
                             $('.button-container').append(button);
                        });
                     }
             });
+            //POST
+            //GET
+            //PUT
+            //DELETE
+
+            //tai yra 4 atskiri kanalai, kurie yra serveryje
+            // /api/clients - 4 kanalai
+
+            // /api/clients - POST 
+            // /api/clients - GET
+            // /api/clients - PUT
+            // /api/clients - DELETE
+            //
+
+
+            $(document).on('click', '#create-client', function() {
+                let client_name = $('#client_name').val();
+                let client_surname = $('#client_surname').val();
+                let client_description = $('#client_description').val();
+                $.ajax({
+                        type: 'POST',
+                        url: 'http://127.0.0.1:8000/api/clients',
+                        data: {client_name:client_name, client_surname:client_surname, client_description:client_description },
+                        success: function(data) {
+                            console.log(data)
+                        }
+                });
+
+                $.ajax({
+                    type: 'GET',
+                    url: 'http://127.0.0.1:8000/api/clients',
+                    data: {csrf:csrf},
+                    success: function(data) {
+                        $('#clients tbody').html('');
+                        $('.button-container').html('');
+                        $.each(data.data, function(key, client) {
+                    
+                        let html;
+                        html = createRowFromHtml(client.id, client.name, client.surname, client.description);
+                        $('#clients tbody').append(html);
+                        });
+                       console.log(data.links)
+                       $.each(data.links, function(key, link) {
+                            let button;
+                            if (link.url != null) { 
+                                if(link.active == true) {
+                                    button = "<button class='btn btn-primary active' type='button' data-page='"+link.url +"'>" + link.label+" </button>";
+                                }
+                                else {
+                                    button = "<button class='btn btn-primary' type='button' data-page='"+link.url +"'>" + link.label+" </button>";
+                                }
+                            }
+                            $('.button-container').append(button);
+                       });
+                    }
+                });
+            })
+            
 
 
 
