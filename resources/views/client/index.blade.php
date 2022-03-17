@@ -330,6 +330,17 @@
                     }
                 });
             });
+
+            $(document).on('click', '.delete-client',function() {
+                let clientid = $(this).attr('data-clientid');
+                $.ajax({
+                    type: 'DELETE',
+                    url: 'http://127.0.0.1:8000/api/clients/'+clientid,//
+                    success: function(data) {
+                       console.log(data)
+                    }
+                });
+            })
             
             
 
