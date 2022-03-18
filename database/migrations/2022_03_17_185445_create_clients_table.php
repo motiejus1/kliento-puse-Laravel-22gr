@@ -17,8 +17,9 @@ class CreateClientsTable extends Migration
             $table->id();
             $table->string('name');            
             $table->string('surname');            
-            $table->string('description');            
-            $table->string('company_name');
+            $table->longText('description');            
+            $table->string('company_title');
+            $table->string('api_client_id'); //stulpelis kuriame saugau kitos sistemos kliento id
             //jokio rysio nesudarinesiu            
             $table->timestamps();
         });

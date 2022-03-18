@@ -13,8 +13,10 @@ class CompanyFactory extends Factory
      */
     public function definition()
     {
+
+        $test_data = ['Profit-focused foreground neural-net','Virtual foreground opensystem','Balanced stable attitude'];
         return [
-            'title' => $this->faker->catchPhrase()
+            'title' => $test_data[rand(0,2)]
         ];
     }
 }

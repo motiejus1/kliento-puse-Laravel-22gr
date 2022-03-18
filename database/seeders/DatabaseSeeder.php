@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,6 +15,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        \App\Models\Company::factory(10)->create();
+        // \App\Models\Company::factory(10)->create();
+        $test_data = ['Profit-focused foreground neural-net','Virtual foreground opensystem','Balanced stable attitude'];
+
+        for ($i=0; $i<3; $i++) {
+            DB::table('companies')->insert([
+                'title' => $test_data[$i],
+                'contact' => 'contact'.$i
+            ]);
+        }
+        
     }
 }
