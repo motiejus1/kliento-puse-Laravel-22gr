@@ -15,15 +15,28 @@ class ClientController extends Controller
      */
     public function index()
     {
-        // $clients = Client:all()
-        //curl uzklausa
+        
         $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => "http://127.0.0.1:8000/api/clients",
-            CURLOPT_CUSTOMREQUEST => "GET",
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => "http://127.0.0.1:8000/api/clients?csrf=123456789",
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_TIMEOUT => 30000,//ms
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "GET",
+                CURLOPT_HTTPHEADER => array(
+                    'Content-Type: application/json',
+                ),
         ));
 
-        return view('test', ['clients'=> $clients]);
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
+            curl_close($curl);
+
+            // dd nutrauks funkcija ir atvaizduos visa kintamaji
+            dd($response);
+
+        return view('test', ['clients'=> json_decode($response)]);
     }
 
     /**

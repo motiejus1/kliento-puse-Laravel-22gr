@@ -21,4 +21,7 @@ Route::get('/clients', function () {
     return view('client.index');
 });
 
-Route::get('', 'App\Http\Controllers\ClientController@index')->name('client.index');
+
+Route::prefix('clie')->group(function() {
+    Route::get('', 'App\Http\Controllers\ClientController@index')->name('client.index');
+});
