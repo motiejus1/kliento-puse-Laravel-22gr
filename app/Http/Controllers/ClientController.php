@@ -143,6 +143,20 @@ class ClientController extends Controller
         ); 
 
         // return $data;
+        
+        //Paysera API. Dokumentacija
+        //API visus duomenis
+        // PAYSERA duoda tiktai puslapiuotus duomenis
+
+        //PAysera visu apmokejimu informacija. 
+        //3000 per diena
+        // Po 250
+        //curl uzklausa su ciklu atlieku tiek kartu reikia
+        
+        // Request timeout - 1.5s, 1.5001s, 500 - prie sistemos prisijungti nepavyko
+        // Request limit - 1000 uzklausu per diena, 1000 ajax uzklausu, viskas mane API
+        //nori daugiau limit, susimokek
+
 
         $curl = curl_init();
         curl_setopt_array($curl, array(
@@ -176,8 +190,18 @@ class ClientController extends Controller
      */
     public function destroy($id)
     {
-        $client = Client::where('api_client_id', '=', $id )->first();
+        // $client = Client::where('api_client_id', '=', $id )->first();
         
+        // API clientu duomenu baze
+        //clientu duomenu bazes kopija yra identiskos
+        //kliento puseje jeigu mes paimsim ir tiesiog istrin klienta is duomenu bazes kopijos paciame API
+        //tas duomuo liks
+
+        //siusti klientu API istrynimo uzklausa
+        //ir atlikti antra uzklausa kuri perbraizo(pakeicia duomenu bazes kopijos duomenis)
+        //loadDataFromApi - sujungia API clientus su duomenu bazes kopija
+
+
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_URL => "http://127.0.0.1:8000/api/clients/".$id,

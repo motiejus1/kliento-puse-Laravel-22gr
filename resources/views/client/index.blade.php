@@ -27,7 +27,8 @@
     <body class="antialiased">
         <div class="container">
             <button id="show-create-client-modal" data-bs-toggle="modal" data-bs-target="#createClientModal" >Create Client</button>
-            
+            <div class="images">
+            </div>
             
             <table id="clients" class="table table-striped">
                 <thead>
@@ -153,6 +154,8 @@
               </div>
             </div>
           </div>
+
+          
         
         <script>
 
@@ -252,7 +255,24 @@
             // /api/clients - PUT
             // /api/clients - DELETE
             //
+            // https://api.unsplash.com/photos/?client_id=BL6GxFw6TnTjKO9HAs5vlTSJDcttPRei0pK1H2eUM4c
 
+
+            $.ajax({
+                        type: 'GET',
+                        url: 'https://api.unsplash.com/photos/?client_id=BL6GxFw6TnTjKO9HAs5vlTSJDcttPRei0pK1H2eUM4c',
+                        // data: {client_name:client_name, client_surname:client_surname, client_description:client_description },
+                        success: function(data) {
+
+                            console.log(data);
+                            $.each(data, function(key, image ) {
+                                let html;
+                                html = '<img style="width:100px;height:100px" src="'+image.urls.regular+'" />'
+                                $('.images').append(html);
+
+                            });
+                        }
+                });
 
             $(document).on('click', '#create-client', function() {
                 let client_name = $('#client_name').val();
