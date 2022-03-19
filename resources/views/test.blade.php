@@ -55,6 +55,10 @@
                             <td>{{$client->contact}}</td>
                             <td>
                             <a class="btn btn-primary" href="{{route("client.edit", $client->api_client_id )}}">Edit</a>
+                            <form method="POST" action={{route('client.delete', $client->api_client_id )}}>
+                            @csrf
+                            <button  class="btn btn-danger" type="submit">DELETE</button>
+                            </form>
                             </td>
                         </tr>
                    @endforeach

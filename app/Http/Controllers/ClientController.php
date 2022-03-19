@@ -32,7 +32,7 @@ class ClientController extends Controller
         // SELECT * FROM `clients` LEFT JOIN companies ON clients.company_title = companies.title WHERE 1
         $clients = Client::leftJoin('companies', function($join) {
             $join->on('companies.title', '=', 'clients.company_title');
-        })->get();
+        })->orderBy('api_client_id', 'ASC')->get();
 
         // dd($clients->toArray());
 
@@ -161,10 +161,11 @@ class ClientController extends Controller
         $response = curl_exec($curl);
         $err = curl_error($curl);
         curl_close($curl);
-        return $response;
-        // $this->loadDataFromApi();
+        $this->loadDataFromApi();
 
-        // return  redirect()->route('client.index');
+        // return $response;
+
+        return  redirect()->route('client.index');
     }
 
     /**
@@ -173,9 +174,32 @@ class ClientController extends Controller
      * @param  \App\Models\Client  $client
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Client $client)
+    public function destroy($id)
     {
-        //
+        $client = Client::where('api_client_id', '=', $id )->first();
+        
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "http://127.0.0.1:8000/api/clients/".$id,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_TIMEOUT => 30000,//ms
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "DELETE",
+            // CURLOPT_POSTFIELDS => json_encode($data),
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json',
+            ),
+    ));
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+
+        $this->loadDataFromApi();
+        return redirect()->route('client.index');
+
+        // $client->delete();
     }
 
     public function loadDataFromApi() {
