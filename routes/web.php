@@ -23,6 +23,7 @@ Route::get('/clients', function () {
 
 
 Route::prefix('clientscurl')->group(function() {
+    //keliai atlieka curl uzklausas
     Route::get('', 'App\Http\Controllers\ClientController@index')->name('client.index');
     Route::get('create', 'App\Http\Controllers\ClientController@create')->name('client.create');
     Route::post('store', 'App\Http\Controllers\ClientController@store')->name('client.store');
